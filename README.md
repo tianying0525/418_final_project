@@ -10,6 +10,8 @@ http://bl.ocks.org/joews/9697914
 
 word cloud:http://bl.ocks.org/ericcoopey/6382449
 
+piechart https://www.d3-graph-gallery.com/pie.html
+
 world map: 
 http://bl.ocks.org/micahstubbs/8e15870eb432a21f0bc4d3d527b2d14f
 https://github.com/d3/d3-geo
