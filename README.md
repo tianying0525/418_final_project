@@ -15,7 +15,5 @@ http://bl.ocks.org/micahstubbs/8e15870eb432a21f0bc4d3d527b2d14f
 https://github.com/d3/d3-geo
 https://medium.com/@andybarefoot/making-a-map-using-d3-js-8aa3637304ee
 
-https://bl.ocks.org/tcya/5f003030fa0ccd1298be90bff277260f
-
 dendrogram: 
 https://www.d3-graph-gallery.com/dendrogram
