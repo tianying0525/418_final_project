@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+
+    <body>
+        <div style="display: inline-block; text-align: center;margin-left: 200px">
+        <div id="svg">
+        </div>
+
+    </body>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script>
+        window.onload = function() {
+            var data = [{
+                value: 100,
+                name: 'airpod case'
+            }, {
+                value: 97,
+                name: 'airpods'
+            }, {
+                value: 91,
+                name: 'apple'
+            }, {
+                value: 90,
+                name: 'apple airpod'
+            }, {
+                value: 54,
+                name: 'airpod pro'
+            }, {
+                value: 33,
+                name: 'iphone airpod'
+            }, {
+                value: 29,
+                name: 'one airpod'
+            }, {
+                value: 24,
+                name: 'apple airpods'
+            }, {
+                value: 20,
+                name: 'airpod charging'
+            }, {
+                value: 19,
+                name: 'airpods case'
+            }, {
+                value: 19,
+                name: 'airpod price'
+            }, {
+                value: 19,
+                name: 'airpod battery'
+            }, {
+                value: 16,
+                name: 'airpods 2'
+            }, {
+                value: 14,
+                name: 'airpod charging case'
+            }, {
+                value: 13,
+                name: 'airpod cases'
+            }, {
+                value: 12,
+                name: 'left airpod'
+            }, {
+                value: 11,
+                name: 'airpod replacement'
+            }, {
+                value: 11,
+                name: 'airpod not working'
+            }, {
+                value: 11,
+                name: 'airpod amazon'
+            }, {
+                value: 11,
+                name: 'find airpod'
+            }, {
+                value: 11,
+                name: 'right airpod'
+            }, {
+                value: 10,
+                name: 'apple airpod case'
+            }, {
+                value: 10,
+                name: 'airpod black'
+            }, {
+                value: 10,
+                name: 'airpod android'
+            }, {
+                value: 10,
+                name: 'lost airpod'
+            }];
+            var width = 400,
+                height = 400,
+                padding = {
+                    top: 40,
+                    right: 40,
+                    bottom: 40,
+                    left: 40
+                };
+                
+            
+            var svg = d3.select("#svg")
+                .append('svg')
+                .attr('width', (width * 2) + 'px')
+                .attr('height', (height * 2) + 'px');
+            
+            var pie = d3.pie().value(function(d) {
+                return d.value;
+            })(data);
+
+            var radius = Math.min(width, height);
+            
+
+            var arc = d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius / 2);
+            
+            var outArc = d3.arc()
+                .innerRadius(radius / 2)
+                .outerRadius(radius);
+                
+            var line = d3.line()
+                .x(function(d) {
+                    return d[0];
+                })
+                .y(function(d) {
+                    return d[1];
+                });
+            
+            var getLabel = function(d, type) {
+                var startPos = d.startAngle + (d.endAngle - d.startAngle) / 2;
+                var data = [];
+                var ra = (type === "text") ? 2.5 : 1;
+                data.push(arc.centroid(d));
+                data.push(outArc.centroid(d));
+                data.push({
+                    0: outArc.centroid(d)[0] + (40 * (startPos < Math.PI ? 1 : -ra)),
+                    1: outArc.centroid(d)[1]
+                });
+
+                return data;
+            }
+            
+            var containers = svg.append("g")
+                .attr("transform", "translate(" + height + "," + height + ")");
+                
+            var container = containers.selectAll("g")
+                .data(pie)
+                .join("g");
+            
+            var color = d3.scaleOrdinal()
+                    .domain(data.map(d => d.name))
+                    .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1),data.length).reverse())
+            
+            container.append("path")
+                .attr("stroke", "white")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data.name))
+                .transition()
+                .delay(function (d, i) { return i * 200; })
+                .duration(200)
+                .ease(d3.easeBounce)
+                .attrTween('d', function (d) {
+                    var i = d3.interpolate(d.startAngle, d.endAngle);
+                    return function (t) {
+                        d.endAngle = i(t);
+                        return arc(d);
+                    }
+                });
+
+            container.append("path")
+                .datum(function(d) {
+                    return getLabel(d, "path");
+                })
+                .attr("class", "labels")
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1)
+                .attr("d", line);
+            
+
+            container.append("text")
+                .datum(function(d) {
+                    d.pos = getLabel(d, "text")[2];
+                    return d;
+                })
+                .text(function(d) {
+                    return d.data.name;
+                })
+                .attr("dx", function(d) {
+                    return d.pos[0]
+                })
+                .attr("dy", function(d) {
+                    return d.pos[1]
+                })
+                .style("font-size", 10);
+        }
+        
+        
+    </script>
+
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>D3.js Line Chart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<style>
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+html {
+  font-size: 10px;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: subpixel-antialiased;
+  box-sizing: border-box;
+}
+html * {
+  box-sizing: inherit;
+}
+
+/* Assets Layout */
+
+.interest {
+  max-width: 768px;
+  margin: 0 auto;
+  position: relative;
+  padding: 0 1rem;
+}
+.interest__data {
+  display: none !important;
+}
+.interest__title {
+  text-align: center;
+  font-family: fantasy;
+  font-size: 2rem;
+}
+.interest__info {
+  position: absolute;
+  top: 6.5rem;
+  left: 1rem;
+  width: 25rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.interest__thumbnail {
+  flex: 0 9rem;
+  height: 10rem;
+  border: 2px solid white;
+  background-image: url(//assets-comparacaodefundos.s3-sa-east-1.amazonaws.com/img/blog/sprite-presidentes.png);
+  background-repeat: no-repeat;
+  position: relative;
+}
+.interest__info-aside {
+  flex: 1;
+}
+.interest__year {
+  background: #27bdbe;
+  font-family: "Roboto";
+  font-size: 1.25rem;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 2px;
+  position: absolute;
+  bottom: 5px;
+  left: -2px;
+}
+.interest__name {
+  font-size: 1.15rem;
+  font-family: "dincomp-medium";
+  color: #595959;
+  border-bottom: 1px solid #e5e5e5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0.5rem;
+}
+.interest__percentage {
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  font-family: "dincomp";
+  color: #949494;
+}
+.interest__percentage-number {
+  color: #27bdbe;
+  font-family: "Roboto";
+  font-weight: bold;
+  font-size: 1.875rem;
+  margin-right: 0.5rem;
+}
+.interest__svg-wrapper {
+  min-height: 300px;
+}
+.interest__caption {
+  display: block;
+  text-align: center;
+  font-size: 1rem;
+  font-family: "Roboto";
+  font-style: italic;
+  font-size: 1.25rem;
+  color: #949494;
+  margin: 1rem 0;
+}
+.interest__line {
+  fill: transparent;
+  stroke-width: 1px;
+}
+.interest__overlay {
+  fill: none;
+  pointer-events: all;
+}
+.interest__focus {
+  display: none;
+}
+.interest__focus line {
+  stroke: #5c4561;
+  shape-rendering: crispEdges;
+}
+.interest__focus-circle {
+  fill: none;
+  stroke: #27bdbe;
+}
+.interest__focus-x, .interest__focus-y {
+  stroke: #27bdbe;
+  stroke-dasharray: 3 3;
+  opacity: 0.5;
+}
+.interest__axis path, .interest__axis line {
+  fill: none;
+  stroke: #bdbdbd;
+  shape-rendering: crispEdges;
+}
+.interest__axis text {
+  font-family: "Roboto";
+  font-size: 1rem;
+  fill: #595959;
+}
+
+.hcb {
+  background-position: 0 0;
+}
+
+.acs {
+  background-position: -90px 0;
+}
+
+.dr {
+  background-position: -180px 0;
+}
+
+.eg {
+  background-position: -270px 0;
+}
+
+.ed {
+  background-position: -360px 0;
+}
+
+.egm {
+  background-position: -450px 0;
+}
+
+.fc {
+  background-position: -540px 0;
+}
+
+.fhc {
+  background-position: -630px 0;
+}
+
+.gv {
+  background-position: -720px 0;
+}
+
+.if {
+  background-position: -810px 0;
+}
+
+.jd {
+  background-position: -900px 0;
+}
+
+.jg {
+  background-position: -990px 0;
+}
+
+.jk {
+  background-position: -1080px 0;
+}
+
+.jq {
+  background-position: -1170px 0;
+}
+
+.jf {
+  background-position: -1260px 0;
+}
+
+.js {
+  background-position: -1350px 0;
+}
+
+.lils {
+  background-position: -1440px 0;
+}
+
+.nr {
+  background-position: -1530px 0;
+}
+  </style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="interest">
+</br>
+</br>
+</br>
+  <h2 class="interest__title">Interest Over Time Line Chart</h2>
+  <div class="interest__info">
+    <div class="interest__thumbnail jd" id="thumbnail">
+      <span class="interest__week" id="week">2019</span>
+    </div>
+    <div class="interest__info-aside">
+      <div class="interest__name"><span id="name">Airpods</span></div>
+      <div class="interest__percentage">
+        <span class="interest__percentage-number" id="percentage">0</span>
+      </div>
+    </div>
+  </div>
+  <div class="interest__svg-wrapper" id="taxBurden"></div>
+  <span class="interest__caption">Search Results Over Time in Five Year Period</span>
+</div>
+
+<pre class="interest__data" id="data">
+Week,Percentage,Presidente,Classe
+1,0,&quot;Airpods&quot;
+2,0,&quot;Airpods&quot;
+3,0,&quot;Airpods&quot;
+4,0,&quot;Airpods&quot;
+5,1,&quot;Airpods&quot;
+6,4,&quot;Airpods&quot;
+7,3,&quot;Airpods&quot;
+8,7,&quot;Airpods&quot;
+9,8,&quot;Airpods&quot;
+10,3,&quot;Airpods&quot;
+11,5,&quot;Airpods&quot;
+12,6,&quot;Airpods&quot;
+13,11,&quot;Airpods&quot;
+14,10,&quot;Airpods&quot;
+15,11,&quot;Airpods&quot;
+16,8,&quot;Airpods&quot;
+17,9,&quot;Airpods&quot;
+18,7,&quot;Airpods&quot;
+19,10,&quot;Airpods&quot;
+20,11,&quot;Airpods&quot;
+21,12,&quot;Airpods&quot;
+22,12,&quot;Airpods&quot;
+23,46,&quot;Airpods&quot;
+24,79,&quot;Airpods&quot;
+25,55,&quot;Airpods&quot;
+26,33,&quot;Airpods&quot;
+27,35,&quot;Airpods&quot;
+28,36,&quot;Airpods&quot;
+29,37,&quot;Airpods&quot;
+30,36,&quot;Airpods&quot;
+31,64,&quot;Airpods&quot;
+32,55,&quot;Airpods&quot;
+33,57,&quot;Airpods&quot;
+34,29,&quot;Airpods&quot;
+35,33,&quot;Airpods&quot;
+36,31,&quot;Airpods&quot;
+37,29,&quot;Airpods&quot;
+38,31,&quot;Airpods&quot;
+39,12,&quot;Airpods&quot;
+40,64,&quot;Airpods&quot;
+41,55,&quot;Airpods&quot;
+42,100,&quot;Airpods&quot;
+43,77,&quot;Airpods&quot;
+44,66,&quot;Airpods&quot;
+45,71,&quot;Airpods&quot;
+46,77,&quot;Airpods&quot;
+47,66,&quot;Airpods&quot;
+48,29,&quot;Airpods&quot;
+49,27,&quot;Airpods&quot;
+50,28,&quot;Airpods&quot;
+51,43,&quot;Airpods&quot;
+52,63,&quot;Airpods&quot;
+53,55,&quot;Airpods&quot;
+54,71,&quot;Airpods&quot;
+55,56,&quot;Airpods&quot;
+56,67,&quot;Airpods&quot;
+57,51,&quot;Airpods&quot;
+58,31,&quot;Airpods&quot;
+59,32,&quot;Airpods&quot;
+60,110,&quot;Airpods&quot;
+
+
+
+</pre>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js'></script>
+  <script>
+    var taxBurden = {
+  
+  nodes: {
+    week: document.querySelector('#week'),
+    name: document.querySelector('#name'),
+    thumbnail: document.querySelector('#thumbnail'),
+    percentage: document.querySelector('#percentage'),
+    container: document.querySelector('#taxBurden'),
+    data: document.querySelector('#data')
+  },
+
+  config: {
+    w: 0,
+    h: 0,
+    m: 20,
+    x: d3.scale.linear().domain([1,61]),
+    y: d3.scale.linear().domain([0, 110]),
+    data: null
+  },
+  
+  components: {
+    axis: d3.svg.axis().orient("bottom").outerTickSize(0),
+    line: d3.svg.line().interpolate("step-after")
+      .x(function (d) { return taxBurden.config.x(d.Week); })
+      .y(function (d) { return taxBurden.config.y(d.Percentage); })
+  },
+  
+  formatDate: d3.time.format("%Y"),
+  
+  parseDate: d3.time.format("%Y").parse,
+  
+  bisectDate: d3.bisector(function (d) { return d.Week; }).left,
+    
+  init: function () {
+    var resizeTimer;
+
+    window.onresize = function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(this.update.bind(this), 100);
+    }.bind(this);
+  
+    this.setMeasures();
+    this.setData();
+    this.plot();
+  },
+
+  setData: function () {
+    this.config.data = d3.csv.parse(this.nodes.data.innerHTML);
+    this.config.data.forEach(function(d) {
+      d.Week = d.Week;
+      d.Percentage = +d.Percentage;
+      d.Presidente = d.Presidente;
+      d.Classe = d.Classe;
+    }.bind(this));
+  },
+  
+  setMeasures: function () {
+    this.config.w = this.nodes.container.offsetWidth;
+    this.config.h = this.nodes.container.offsetHeight;
+    this.config.x = this.config.x.range([0, this.config.w]);
+    this.config.y = this.config.y.range([this.config.h - this.config.m, 0]);  
+    this.components.axis = this.components.axis.scale(this.config.x);
+  },
+  
+  update: function () {
+    this.setMeasures();
+    
+    d3.select(this.nodes.container).select('svg')
+      .attr({
+        width: this.config.w      
+      });
+    
+    d3.select('.interest__axis')
+      .transition()
+      .call(this.components.axis);
+        
+    d3.select('.interest__overlay')
+      .attr({
+        height: this.config.h,
+        width: this.config.w
+      });
+    
+    d3.select('.interest__line')
+      .attr('d', '')
+      .attr('d', this.components.line);
+    
+  },
+  
+  plot: function () {
+    var svg = d3.select(this.nodes.container)
+      .append('svg')
+      .attr({
+        height: this.config.h,
+        width: this.config.w
+      });
+    
+    svg.append('g')
+      .attr({
+        class: 'interest__axis',
+        transform: ['translate(0,', this.config.h - this.config.m ,')'].join('')
+      })
+      .call(this.components.axis);
+
+    var linearGradient = svg.append('defs')
+      .append('linearGradient')
+      .attr('id', 'gradient');
+    
+    linearGradient
+      .append("stop")
+      .attr("stop-color", "#008000");
+
+    linearGradient
+      .append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#c83a22");
+    
+    var path = svg.append('path')
+      .datum(this.config.data)
+      .attr({
+        class: 'interest__line',
+        d: this.components.line,
+        stroke: 'url(#gradient)'
+      });
+    
+    var totalLength = path.node().getTotalLength();
+    
+    path.attr({
+      'stroke-dasharray': [totalLength, totalLength].join(','),
+      'stroke-dashoffset': totalLength
+    })
+    .transition().duration(3000).ease('linear')
+    .attr('stroke-dashoffset', 0);
+    
+    var focus = svg.append('g')
+      .attr('class', 'interest__focus');
+
+    focus.append('line')
+      .attr({
+        class: 'interest__focus-x',
+        y1: this.config.h - 20,
+        y2: 0
+      });
+    
+    focus.append('circle')
+      .attr({
+        class: 'interest__focus-circle',
+        r: 4
+      });
+    
+    svg.append('rect')
+      .attr({
+        class: 'interest__overlay',
+        width: this.config.w,
+        height: this.config.h
+      })
+      .on({
+        mouseover: function() { focus.style('display', 'initial'); },
+        mouseout: function() { focus.style('display', 'none'); },
+        mousemove: taxBurden.mousemove
+      });
+  },
+  
+  mousemove: function () {
+      var self = taxBurden,
+          x0 = self.config.x.invert(d3.mouse(this)[0]),
+          i = self.bisectDate(taxBurden.config.data, x0, 1),
+          d0 = self.config.data[i - 1],
+          d1 = self.config.data[i],
+          d = x0 - d0.Week > d1.Week - x0 ? d1 : d0,
+          focus = d3.select('.interest__focus');
+
+      focus.select("circle")
+        .attr("transform", 
+              ['translate(', self.config.x(d.Week), ',', self.config.y(d.Percentage), ')'].join(''));
+    
+      focus.select(".interest__focus-x")
+        .attr({
+          transform: ['translate(', self.config.x(d.Week), ',0)'].join(''),
+          y2: self.config.y(d.Percentage)
+        });
+
+      focus.select(".interest__focus-y")
+        .attr({
+          transform: ['translate(0,', self.config.y(d.Percentage), ')'].join(''),
+          x2: self.config.x(d.Week)
+        })
+
+      self.nodes.week.innerHTML = d.Week;
+      self.nodes.name.innerHTML = d.Presidente;
+      self.nodes.percentage.innerHTML = d.Percentage;
+      self.nodes.thumbnail.className = 'interest__thumbnail '+ d.Classe;
+  }
+};
+
+taxBurden.init();
+    
+  </script>
+
+
+</body>
+</html>
